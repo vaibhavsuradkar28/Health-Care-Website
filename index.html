@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Symptom Checker</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Age Verification Modal -->
+    <div class="modal fade" id="ageVerificationModal" data-bs-backdrop="static" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Age Verification</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="age-verification-content text-center">
+                        <i class="fas fa-user-shield fa-3x mb-3"></i>
+                        <p>You must be 18 years or older to access this medical symptom checker.</p>
+                        <div class="form-check mt-4">
+                            <input class="form-check-input" type="checkbox" id="ageVerificationCheckbox">
+                            <label class="form-check-label" for="ageVerificationCheckbox">
+                                I confirm that I am 18 years or older
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary btn-lg w-100" onclick="verifyAge()">Continue</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-heartbeat"></i> AI Symptom Checker
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#" onclick="showHome()">
+                            <i class="fas fa-home"></i> Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showAboutUs()">
+                            <i class="fas fa-info-circle"></i> About
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showContactDoctor()">
+                            <i class="fas fa-user-md"></i> Find a Doctor
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-4">
+        <!-- Home Section -->
+        <div id="homeSection" class="content-section">
+            <div class="row justify-content-center">
+                <div class="col-md-8 text-center">
+                    <h1 class="main-title">AI-Powered Symptom Checker</h1>
+                    <p class="lead">Check your symptoms and find out what could be causing them</p>
+                    
+                    <!-- Progress Steps -->
+                    <div class="progress-steps mb-4">
+                        <div class="step active" id="step1">
+                            <div class="step-icon"><i class="fas fa-user"></i></div>
+                            <div class="step-text">Profile</div>
+                        </div>
+                        <div class="step" id="step2">
+                            <div class="step-icon"><i class="fas fa-notes-medical"></i></div>
+                            <div class="step-text">Symptoms</div>
+                        </div>
+                        <div class="step" id="step3">
+                            <div class="step-icon"><i class="fas fa-file-medical"></i></div>
+                            <div class="step-text">Results</div>
+                        </div>
+                    </div>
+
+                    <!-- Patient Form Section -->
+                    <div id="patientForm" class="form-section">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h3 class="card-title mb-4">Personal Information</h3>
+                                <form id="patientInfoForm" onsubmit="handlePatientSubmit(event)">
+                                    <div class="mb-3">
+                                        <label for="name" class="form-label">Full Name</label>
+                                        <input type="text" class="form-control" id="name" required>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label for="gender" class="form-label">Gender</label>
+                                            <select class="form-select" id="gender" required>
+                                                <option value="">Select Gender</option>
+                                                <option value="male">Male</option>
+                                                <option value="female">Female</option>
+                                                <option value="other">Other</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="dob" class="form-label">Date of Birth</label>
+                                            <input type="date" class="form-control" id="dob" required>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="contact" class="form-label">Contact Number</label>
+                                        <input type="tel" class="form-control" id="contact" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="address" class="form-label">Address</label>
+                                        <textarea class="form-control" id="address" rows="3" required></textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary btn-lg w-100">Continue to Symptoms</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Symptoms Section -->
+                    <div id="symptomsSection" style="display: none;">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h3 class="card-title mb-4">Select Your Symptoms</h3>
+                                <div class="symptom-search mb-4">
+                                    <input type="text" class="form-control" id="symptomSearch" placeholder="Search symptoms...">
+                                </div>
+                                <div class="selected-symptoms mb-3"></div>
+                                <div id="symptomsList" class="row symptom-grid"></div>
+                                <button onclick="analyzeSymptoms()" class="btn btn-primary btn-lg w-100 mt-4">
+                                    Get Analysis
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Results Section -->
+                    <div id="resultsSection" class="section" style="display: none;">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h3 class="card-title mb-4">Analysis Results</h3>
+                                <div id="analysisResults"></div>
+                                <div class="mt-4">
+                                    <button onclick="showContactDoctor()" class="btn btn-primary btn-lg w-100">
+                                        Consult a Doctor
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- About Us Section -->
+        <div id="aboutUsSection" class="content-section" style="display: none;">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h2 class="card-title">About AI Symptom Checker</h2>
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <h4><i class="fas fa-robot"></i> AI-Powered Analysis</h4>
+                            <p>Our advanced AI system analyzes your symptoms using the latest medical knowledge and provides accurate preliminary assessments.</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h4><i class="fas fa-shield-alt"></i> Safe & Confidential</h4>
+                            <p>Your health information is protected with industry-standard security measures. We prioritize your privacy and confidentiality.</p>
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <h4><i class="fas fa-database"></i> Comprehensive Database</h4>
+                            <p>Access to an extensive database of medical conditions, symptoms, and treatment options.</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h4><i class="fas fa-user-md"></i> Professional Support</h4>
+                            <p>Connect with qualified healthcare professionals for further consultation and treatment.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Doctor Section -->
+        <div id="contactDoctorSection" class="content-section" style="display: none;">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h2 class="card-title">Find a Doctor</h2>
+                    <div class="doctor-search mb-4">
+                        <input type="text" class="form-control" placeholder="Search by name or specialty...">
+                    </div>
+                    <div class="row" id="doctorList">
+                        <!-- Doctor list will be populated by JavaScript -->
+                    </div>
+                    
+                    <div class="disclaimer mt-4">
+                        <h4><i class="fas fa-exclamation-triangle"></i> Important Disclaimer</h4>
+                        <p>The information provided by AI Symptom Checker is not a substitute for professional medical advice, diagnosis, or treatment. Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <p>&copy; 2025 AI Symptom Checker. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-end">
+                    <a href="#" class="text-muted me-3">Privacy Policy</a>
+                    <a href="#" class="text-muted">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
